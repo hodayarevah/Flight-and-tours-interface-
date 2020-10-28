@@ -1,0 +1,323 @@
+﻿<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Travelo</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- <link rel="manifest" href="site.webmanifest"> -->
+    <link rel="shortcut icon" type="image/x-icon" href="../img/favicon.png">
+    <!-- Place favicon.ico in the root directory -->
+    <!-- CSS here -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/owl.carousel.min.css">
+    <link rel="stylesheet" href="../css/magnific-popup.css">
+    <link rel="stylesheet" href="../css/font-awesome.min.css">
+    <link rel="stylesheet" href="../css/themify-icons.css">
+    <link rel="stylesheet" href="../css/nice-select.css">
+    <link rel="stylesheet" href="../css/flaticon.css">
+    <link rel="stylesheet" href="../css/gijgo.css">
+    <link rel="stylesheet" href="../css/animate.css">
+    <link rel="stylesheet" href="../css/slick.css">
+    <link rel="stylesheet" href="../css/slicknav.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="../css/style1.css">
+    <link href="../CSS/StyleSheet4.css" rel="stylesheet" />
+    <link href="dist/main.css" type="text/css" rel="stylesheet" />
+    <script src="dist/main.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
+    <script src="../Scripts/ajaxCalls.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="../js/notiflix-aio.js"></script>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        var tours = new Array();//i do it.
+        index = 0;
+        currentID = 0
+        $(document).ready(function () {
+
+            $("#ph").on('click', '.check-checkbox', function () {
+                if ($(this).is(':checked')) {
+                    indextour = $(this).attr("id");
+                    Notiflix.Confirm.Show('Add tour', 'Are you shure you want to add new tour?', 'Yes', 'No', function () {
+                        ajaxCall("POST", "../api/Tours", JSON.stringify(tours[indextour - 1]), function () {
+                            document.getElementById(indextour).disabled = true;
+                            Notiflix.Notify.Success('Tours has been successfully post!');
+
+
+                        }, posterr);
+                    }, function () { Notiflix.Notify.Failure('Not added'); });
+
+
+
+
+
+                }
+            });
+            loadTours();
+
+
+        });
+        var definition = [];
+        function loadTours() {
+            let name = sessionStorage.getItem("word");
+            nameCountry = name;
+            url_n = "https://www.triposo.com/api/20200803/poi.json?location_id=" + name + "&tag_labels=nightlife&fields=id,images,tour_ids,name,location_ids,tags,tag_labels,booking_info,score,location_id&account=HDQQ2BE4&token=xxtievcqem0vohtepl5nq20xpe3hodmh";
+            $.get(url_n).done(successTF);
+            $.get(url_n).fail(errFunc);
+
+            url_a = "https://www.triposo.com/api/20200803/poi.json?location_id=" + name + "&tag_labels=eatingout&fields=id,images,tour_ids,name,location_ids,tags,tag_labels,booking_info,score,location_id&account=HDQQ2BE4&token=xxtievcqem0vohtepl5nq20xpe3hodmh";
+            $.get(url_a).done(successTF);
+            $.get(url_a).fail(errFunc);
+
+            url_m = "https://www.triposo.com/api/20200803/poi.json?location_id=" + name + "&tag_labels=sightseeing&bookable=1&fields=id,images,tour_ids,name,location_ids,tags,tag_labels,booking_info,score,location_id&account=HDQQ2BE4&token=xxtievcqem0vohtepl5nq20xpe3hodmh";
+            $.get(url_m).done(successTF);
+            $.get(url_m).fail(errFunc);
+        }
+
+
+        var str = "";
+
+        function successTF(data) {
+
+            if ((data != null) && (data.results.length > 0)) {
+                str += '<div class="popular_places_area"> <div class="container"> <div class="row justify-content-center">';
+
+                countryTours = "";
+                countryTours = data.results;
+                for (var i in countryTours) {
+                    let category
+                    let stringicon
+                    let duration
+                    let string
+                    let idtour
+                    let currency
+                    idtour = countryTours[i]['id']
+                    let arr = countryTours[i]['tag_labels']
+                    if (arr.includes("nightlife")) {
+                        category = 'night';
+                        stringicon = 'fa fa-beer';
+                        duration = 4;
+                        string = 'FROM';
+                    }
+                    else
+                        if (arr.includes("eatingout")) {
+                            category = 'allday';
+                            stringicon = 'fa fa-cutlery'
+                            duration = 2;
+                            string = 'FROM';
+                        }
+                        else if (arr.includes("sightseeing")) {
+                            category = 'morning';
+                            stringicon = 'fa fa-binoculars'
+                            duration = 3;
+                            string = 'PER PERSON';
+                        }
+
+                    let country = countryTours[i]['location_id']
+                    let type_tours = countryTours[i]['tags'][0]['tag']['name']
+
+                    let price
+                    if (countryTours[i]['booking_info'] != null) {
+                        price = countryTours[i]['booking_info']['price']['amount'];
+                        priceconvert = parseFloat(price)        
+                        currency = "EUR";
+                    }
+                    else {
+                        price = 30.00;
+                        currency = "EUR";
+                        if (category == 'night')
+                            price += 26.00;
+                        priceconvert = parseFloat(price)
+
+                    }
+
+                    let name_tours = countryTours[i]['name']
+                    let score = countryTours[i]['score'].toFixed(2)
+                    scoreconvert = parseFloat(score)
+
+                    let img_url
+                    if (countryTours[i]['images'].length > 0)
+                        img_url = countryTours[i]['images'][0]['source_url']
+                    else {
+                        if (category == 'night')
+                            img_url = "../img/bar.jfif"
+                        else if (category == 'morning')
+                            img_url = "../img/museum.jfif";
+                        else if (category == 'allday')
+                            img_url = "../img/resturant.jfif";
+                    }
+
+
+                    newTour = {
+                        Id_tours: idtour,
+                        Country: country,
+                        Type_tours: type_tours,
+                        Price: priceconvert,
+                        Currency: currency,
+                        Name_tours: name_tours,
+                        Img_url: img_url,
+                        Duration: duration,
+                        Score: scoreconvert,
+                        Category: category
+                        // definition:
+
+                    }
+                    tours.push(newTour);
+
+                    currentID++;
+
+                    str += '<div class="col-lg-4 col-md-6"> <div class="single_place"> <div class="thumb"><img src="' + img_url + '" alt=""> <a class="prise"><p>' + string + '</p>€' + price + '</a> </div>';
+                    str += '<div class="place_info" ><h3 id="' + i + '"class="btnadd" onclick=mytour(' + countryTours[i] + ')>' + name_tours + '</h3><p>"' + type_tours + '"</p> <div class="rating_days d-flex justify-content-between">';
+                    str += '<span class="d-flex justify-content-center align-items-center"> <i class="fa fa-star"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i> <i class="fa fa-star"></i>  <i class="fa fa-star"></i><a href="#">(' + score + ')</a> </span>';
+                    str += '<br><div class="shirel"><div class="toggle"> <input type="checkbox" name="toggle" class="check-checkbox" id="' + currentID + '"> <label class="check-label" for="' + currentID + '"><div id="background"></div> <span class="face">';
+                    str += '<span class="face-container"> <span class="eye left"></span>  <span class="eye right"></span> <span class="mouth"></span>  </span> </label> </div> </div></div></span>';
+                    str += '<div class="days"> <i class="fa fa-clock-o"></i><a>' + duration + ' Hours</a> <br> <i class="' + stringicon + '"></i><a>' + category + '</a></div> </div></div></div>';
+
+
+                }
+
+                str += '</div ></div ></div >';
+            }
+
+            index++;
+            if (index == 3) {
+                if (str == "") {
+                    Notiflix.Report.Warning('No Tours has been found', '"the destansion you have chosen has no tours yet" <br><br>- Shirel & Hodaya', 'Click');
+                    window.setTimeout(function () {
+
+                        // Move back to serch
+                        window.location.href = "index.html";
+
+                    }, 3000);
+
+
+                }
+                else
+                    document.getElementById("ph").innerHTML += str;
+                index = 0;
+
+            }
+
+        }
+
+       
+
+        function errFunc(err) {
+            swal("Error: " + err);
+        }
+
+
+        function posterr(err) {
+            swal(err.responseJSON.ExceptionMessage);
+        }
+
+
+    </script>
+
+
+</head>
+
+<body>
+  
+    <header>
+        <div class="header-area ">
+            <div id="sticky-header" class="main-header-area">
+                <div class="container-fluid">
+                    <div class="header_bottom_border">
+                        <div class="row align-items-center">
+                            <div class="col-xl-2 col-lg-2">
+                                <div class="logo">
+                                    <a href="index.html">
+                                        <img src="../img/logo.png" alt="">
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-xl-6 col-lg-6">
+                                <div class="main-menu  d-none d-lg-block">
+                                    <nav>
+                                        <ul id="navigation">
+                                            <li><a href="index.html">home</a></li>
+                                            <li><a class="active" href="countryTours.html">About</a></li>
+                                            <li><a href="destinationdetails.html">my Tours</a></li>
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mobile_menu d-block d-lg-none"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="loader">
+        <div class="bar1"></div>
+        <div class="bar2"></div>
+        <div class="bar3"></div>
+        <div class="bar4"></div>
+        <div class="bar5"></div>
+        <div class="bar6"></div>
+    </div>
+    <a href="#" id="toTop" style="display: block;">
+
+        <span>Top</span>
+    </a>
+
+
+    <div id="ph">
+
+    </div>
+
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://static.codepen.io/assets/common/stopExecutionOnTimeout-de7e2ef6bfefd24b79a3f68b414b87b8db5b08439cac3f1012092b2290c719cd.js"></script>
+
+    <script src=" https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <!-- JS here -->
+    <script src="../js/vendor/modernizr-3.5.0.min.js"></script>
+    <script src="../js/vendor/jquery-1.12.4.min.js"></script>
+    <script src="../js/popper.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+    <script src="../js/owl.carousel.min.js"></script>
+    <script src="../js/isotope.pkgd.min.js"></script>
+    <script src="../js/ajax-form.js"></script>
+    <script src="../js/waypoints.min.js"></script>
+    <!--<script src="../jquery.counterup.min.js"></script>-->
+    <script src="../js/imagesloaded.pkgd.min.js"></script>
+    <script src="../js/scrollIt.js"></script>
+    <script src="../js/jquery.scrollUp.min.js"></script>
+    <script src="../js/wow.min.js"></script>
+    <script src="../js/nice-select.min.js"></script>
+    <script src="../js/jquery.slicknav.min.js"></script>
+    <script src="../js/jquery.magnific-popup.min.js"></script>
+    <script src="../js/plugins.js"></script>
+    <script src="../js/gijgo.min.js"></script>
+    <script src="../js/slick.min.js"></script>
+
+
+
+    <!--contact js-->
+    <script src="../js/contact.js"></script>
+    <script src="../js/jquery.ajaxchimp.min.js"></script>
+    <script src="../js/jquery.form.js"></script>
+    <script src="../js/jquery.validate.min.js"></script>
+    <script src="../js/mail-script.js"></script>
+
+
+    <script src="../js/main.js"></script>
+
+</body>
+
+</html>

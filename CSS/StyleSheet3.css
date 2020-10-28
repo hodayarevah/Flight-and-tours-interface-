@@ -1,0 +1,95 @@
+﻿.row {
+    font-family: "Lobster", serif;
+    height: 100%;
+}
+
+#open {
+    background-image: url('../image/back.jpg');
+    height: 133px;
+}
+
+
+body {
+    box-sizing: border-box;
+    font: 16px Arial;
+   
+}
+#bodyfluid {
+    background-color: #80808030;
+    font-size: 19px;
+
+    /*height: 650px;*/
+}
+#newDiscountBTN {
+    font-size: 1.75rem;
+
+}
+section.services {
+    text-align: center;
+}
+
+.header {
+    background-color: cornflowerblue;
+    height: 120px;
+    color: white;
+}
+
+    .header img {
+        float: left;
+        width: 120px;
+        height: 120px;
+    }
+
+    .header h1 {
+        position: relative;
+        top: 40px;
+        left: 10px;
+    }
+#justflight {
+    top: 8%;
+    left: 49%;
+    position: absolute;
+}
+#ex{
+    height: 139px;
+    position: absolute;
+}
+
+
+input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+}
+
+    input[type=text] {
+        background-color: #f1f1f1;
+        width: 100%;
+    }
+
+    input[type=submit] {
+        background-color: DodgerBlue;
+        color: #fff;
+    }
+
+
+
+
+
+#formdiv {
+    padding-top: 70px;
+}
+
+.formelement {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.sale-img {
+    height: 30px;
+    width: 30px;
+}
+html {
+    background-color: #80808030;
+}

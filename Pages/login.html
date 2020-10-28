@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="../Scripts/ajaxCalls.js"></script>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="../Scripts/JavaScript.js"></script>
+    <link href="../CSS/StyleSheet2.css" rel="stylesheet" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+</head>
+<body>
+    <script>
+        $(document).ready(function () {
+            $("#loginuser").submit(login)
+
+        });
+
+        function login() {
+            let username = $("#uname").val();
+            let password = $("#psw").val();
+
+            ajaxCall("POST", "../api/Manager", JSON.stringify([username, password]), sucsseslog, faillog)
+            return false;
+        }
+
+
+        function sucsseslog(data) {
+            if (data != null) {
+                swal("log in succesede");
+                ////localStorage.setItem('manager', data);
+                window.location.replace('Manager.html');
+
+
+            }
+            else
+                swal("No such manager");
+        }
+
+
+        function faillog() {
+            swal("errorrrrrrrrrr");
+            throw (ex);
+
+
+        }
+
+    </script>
+    <div class="middle">
+        <h1>  Get Your Flight Now!</h1>
+        <hr>
+
+        <a id="user" href="flights.html"><p>Tap here to continue</p></a>
+    </div>
+
+
+
+    <button class="bottomleft" onclick="document.getElementById('id01').style.display='block'">Login as Manager</button>
+    <button class="bottomleft" onclick="location.href='logintour.html'">Go to tours site</button>
+
+    <div id="id01" class="modal">
+
+        <form id="loginuser" class="modal-content animate">
+
+            <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Modal">&times;</span>
+
+
+            <div class="container">
+                <div class="imgcontainer">
+
+                    <img src="../image/1.png" alt="Manager" class="avatar">
+
+                </div>
+                <label for="uname"><b>Username</b></label>
+                <input type="text" placeholder="Enter Username" name="uname" id="uname" required>
+
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" id="psw" required>
+
+                <button class="buttonform" type="submit">Login</button>
+               
+                <button type="button" onclick="document.getElementById('id01').style.display='none'" class="cancelbtn">Cancel</button>
+            </div>
+
+
+        </form>
+    </div>
+
+
+
+</body>
+</html>

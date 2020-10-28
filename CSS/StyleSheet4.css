@@ -1,0 +1,116 @@
+﻿body {
+}
+
+.animate {
+    transition: all 0.1s;
+    -webkit-transition: all 0.1s;
+}
+
+.btndel {
+    border-radius: 10px;
+    font-family: 'Pacifico', cursive;
+    font-size: 25px;
+    color: #FFF;
+    text-decoration: none;
+    background-color: #3498DB;
+    border-bottom: 5px solid #2980B9;
+    text-shadow: 0px -2px #2980B9;
+}
+
+
+    .btndel:active {
+        transform: translate(0px,5px);
+        -webkit-transform: translate(0px,5px);
+        border-bottom: 1px solid;
+    }
+
+.loader {
+    margin: 0 auto;
+    width: 60px;
+    height: 50px;
+    text-align: center;
+    font-size: 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateY(-50%) translateX(-50%);
+}
+
+    .loader > div {
+        height: 100%;
+        width: 8px;
+        display: inline-block;
+        float: left;
+        margin-left: 2px;
+        -webkit-animation: delay 0.8s infinite ease-in-out;
+        animation: delay 0.8s infinite ease-in-out;
+    }
+
+    .loader .bar1 {
+        background-color: #754fa0;
+    }
+
+    .loader .bar2 {
+        background-color: #09b7bf;
+        -webkit-animation-delay: -0.7s;
+        animation-delay: -0.7s;
+    }
+
+    .loader .bar3 {
+        background-color: #90d36b;
+        -webkit-animation-delay: -0.6s;
+        animation-delay: -0.6s;
+    }
+
+    .loader .bar4 {
+        background-color: #f2d40d;
+        -webkit-animation-delay: -0.5s;
+        animation-delay: -0.5s;
+    }
+
+    .loader .bar5 {
+        background-color: #fcb12b;
+        -webkit-animation-delay: -0.4s;
+        animation-delay: -0.4s;
+    }
+
+    .loader .bar6 {
+        background-color: #ed1b72;
+        -webkit-animation-delay: -0.3s;
+        animation-delay: -0.3s;
+    }
+
+@-webkit-keyframes delay {
+    0%, 40%, 100% {
+        -webkit-transform: scaleY(0.05);
+    }
+
+    20% {
+        -webkit-transform: scaleY(1);
+    }
+}
+
+@keyframes delay {
+    0%, 40%, 100% {
+        transform: scaleY(0.05);
+        -webkit-transform: scaleY(0.05);
+    }
+
+    20% {
+        transform: scaleY(1);
+        -webkit-transform: scaleY(1);
+    }
+}
+    .cancelbtn {
+        width: auto;
+        margin-left: 36px;
+        padding: 9px 11px;
+        background: linear-gradient(135deg, #41a3a6 0%, #93dfd3 100%);
+        color: white;
+        position: absolute;
+        z-index: 99;
+        margin-top: -67px;
+    }
+
+
+

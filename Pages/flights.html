@@ -1,0 +1,906 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <link href="../CSS/bootstrap.min.css" rel="stylesheet" />
+
+
+  
+    <!------ Include the above in your HEAD tag ---------->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../CSS/StyleSheet1.css" rel="stylesheet" />
+    <link href="../CSS/style.css" rel="stylesheet" />
+    <link href="../CSS/font-awesome.min.css" rel="stylesheet" />
+    <link href="../CSS/style.css" rel="stylesheet" />
+    <link href="../CSS/slick.css" rel="stylesheet" />
+    <link href="../CSS/slick-theme.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/1/leaflet.css" />
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link href="../CSS/bootstrap.min.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/leaflet/1/leaflet.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/places.js@1.19.0"></script>
+    <script src="../Scripts/ajaxCalls.js"></script>
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+    <script src="../Scripts/autoC.js"></script>
+    <script src="../js/slick.min.js"></script>
+
+    <script src="../js/notiflix-aio.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="../js/bootstrap.min.js"></script>
+
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../js/txt.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC-7doWBsVoz6NamT0_sTrCquNqV3spz4I&callback=myMap"></script>
+    <script>
+
+        countryCodes = [];
+        Myflightsarr = [];
+        discountsArr = [];
+        tourschosen = ["no tour", "no tour", "no tour"];
+        warning = 0;
+        airportList = {};//i do it.
+        airlinesList = {};//i do it.
+        var airports = new Array();//i do it.
+        var airlines = new Array();// id do it
+        toursData = {}
+        numoftour = 0;
+        var flagtouroffer = 0;
+        flagex = 0;
+
+        flag = 0; // 0 =>  there are already airport table on db
+        dataArr = {};//Store the current search arr
+
+
+        $(document).ready(function () {
+
+            var now = new Date();
+            loadAirports();//button of getairports
+            loadAirLines();//button of getairlines
+            $("#strtBTN").submit(postFlight);
+            $("#editDiv").hide();
+            lastDate = now.toISOString().substring(0, 10);
+            $('#from-date1').prop('min', lastDate);//Cant fly backwards
+            $('#to-date').prop('min', lastDate); //Cant fly backwards
+            $("#flightForm").submit(getFlight)
+
+            $("#ph").on('click', '.flight_row', function () {
+                var id = $(this).data('id');// data-id
+                $(".tour_row_" + id).toggle("fast");
+                //$(".your-class").slick({
+                //    slidesToShow: 3,
+                //    slidesToScroll: 3
+                //});
+
+
+            });
+
+            $(document).on("click", ".popupCloseButton", function () {
+                $('.hover_bkgr_fricc').hide();
+            });
+
+            $(document).on("click", ".trigger_popup_fricc", function () {
+                corrent_idtour = $(this).attr("id");
+                $('.hover_bkgr_fricc').show();
+                moreinfotour(corrent_idtour);
+            });
+
+            //$(document).on("click", ".hover_bkgr_fricc", function () {
+            //    $('.hover_bkgr_fricc').hide();
+            //});
+
+
+        });
+        //----------------------------------------favorite flights-------------------------------------------------------
+
+
+
+
+        //------------------------------------load airaports and airplaine---------------------------------------------------------
+
+        function loadAirports() {
+
+
+            url = "https://api.skypicker.com/locations?type=dump&locale=en-US&location_types=airport&limit=4000&active_only=true&sort=name";
+            $.get(url).done(successCBF);
+            $.get(url).fail(errorCB);
+
+        }
+
+        function successCBF(data) {
+            airportList = data;
+            ajaxCall("GET", "../api/Airport", "", function (dataa) {
+
+                if (dataa != null) {
+                    warning = 1;
+                    swal("All Airports has been loaded!", "", "success");
+                }
+
+
+                var options = [];
+
+                for (var i = 0; i < airportList.locations.length; i++) {
+                    strcont = airportList['locations'][i]['id'] + ", " + airportList['locations'][i]['city']['country']['name'];
+                    options.push(strcont);
+                    airport = { // Note that the name of the fields must be identical to the names of the properties of the object in the server
+                        airport_code: airportList['locations'][i]['id'],
+                        airport_name: airportList['locations'][i]['name'],
+                        airport_long: airportList['locations'][i]['location']['lon'],
+                        airport_lat: airportList['locations'][i]['location']['lat'],
+                        city: airportList['locations'][i]['city']['name'],
+                        country: airportList['locations'][i]['city']['country']['name']
+
+
+                    };
+                    airports.push(airport)
+                }
+
+
+                if (warning == 0) {
+                    ajaxCall("POST", "../api/Airport", JSON.stringify(airports), function () {
+                        swal("All Airport Has Been Added!", "", "success");
+
+                    }, errorCB);
+                }// Load the airports to the DB, Only Once
+
+                autocomplete(document.getElementById("dep"), options);
+                autocomplete(document.getElementById("arival"), options);
+                $('#srch1').prop('disabled', true); //Disabled the btn
+
+            }, errMyFlights)
+        }
+
+        //----------------------------------finish click GetAirports---------------------------------------------
+
+        function loadAirLines() {
+            ajaxCall("GET", "../api/Airline", "", function (data) {
+                if (data == null) {
+                    url = "https://api.skypicker.com/airlines";
+                    $.get(url).done(successLoadAirLines);
+                    $.get(url).fail(errorCB);
+                }
+                else {
+                    swal("All Airline has been loaded!", "", "success");
+                }
+                $('#srch2').prop('disabled', true); //Disabled the btn
+            }, errMyFlights);
+        }
+        function successLoadAirLines(data) {
+
+
+            airlinesList = data;
+
+            for (var i = 0; i < airlinesList.length; i++) {
+                if (airlinesList[i]['type'] == "airline") {
+                    airline = {
+                        airline_code: airlinesList[i]['id'],
+                        airline_name: airlinesList[i]['name'],
+                    }
+                    airlines.push(airline);
+
+                }
+
+
+            }
+            ajaxCall("POST", "../api/Airline", JSON.stringify(airlines), function () {
+                swal("Airline Has Been Added!", "", "success")
+
+            }, errorCB);
+
+
+
+
+
+        }
+        //----------------------------------finish click GetAirline---------------------------------------------
+
+
+        function postFlight() {
+            from = $("#dep").val();
+            to = $("#arival").val();
+            start = $("#from-date1").val();
+            var mydate = new Date(start);
+            start = mydate.getDate() + "/" + (mydate.getMonth() + 1) + "/" + mydate.getFullYear();
+            end = $("#to-date").val();
+            var mydate = new Date(end);
+            end = mydate.getDate() + "/" + (mydate.getMonth() + 1) + "/" + mydate.getFullYear();
+
+
+
+            //  url = "https://api.skypicker.com/flights?flyFrom=PRG&to=LGW&dateFrom=10/04/2020&dateTo=10/05/2020&partner=picky";
+
+            url = "https://api.skypicker.com/flights?flyFrom=" + from + "&to=" + to + "&dateFrom=" + start + "&dateTo=" + end + "&partner=picky";
+            $.get(url).done(apiSc);
+            $.get(url).fail(errorFF);
+            return false;
+
+
+        }
+
+        function apiSc(data) {
+
+            createTable(data.data);
+        }
+
+        function errFunc() {
+            swal("errrrrr");
+        }
+        //convert formatDate of UTC to YYYY-MM-DD
+        function convertTime(D) {
+            var Dformat = new Date(D.dTimeUTC * 1000)
+            if (Dformat.getMonth() + 1 < 10) {
+                Dmonth = "0" + (Dformat.getMonth() + 1);
+                Ddateformat = Dformat.getFullYear() + "-" + Dmonth + "-" + Dformat.getDate()
+            }
+            else {
+                Ddateformat = Dformat.getFullYear() + "-" + (Dformat.getMonth() + 1) + "-" + Dformat.getDate()
+            }
+
+            var Aformat = new Date(D.aTimeUTC * 1000)
+            if (Aformat.getMonth() + 1 < 10) {
+                Amonth = "0" + (Aformat.getMonth() + 1);
+                Adateformat = Aformat.getFullYear() + "-" + Amonth + "-" + Aformat.getDate()
+            }
+            else {
+                Adateformat = Aformat.getFullYear() + "-" + (Aformat.getMonth() + 1) + "-" + Aformat.getDate()
+            }
+        }
+        //-----------------------------------------------------------------clc the first duration --------
+
+        function diff_hours(dt2, dt1) {
+
+            var diff = (dt2.getTime() - dt1.getTime()) / 1000;
+            diff /= (60 * 60);
+            return Math.abs(Math.round(diff));
+
+        }
+
+        function createTable(data) {
+
+            ajaxCall("GET", "../api/Discount", "", function (discountsflight) {
+                dflight = [];
+                for (var i in discountsflight) {
+                    dflight.push({ Id: discountsflight[i].Id, AirlineCode: discountsflight[i]["AirlineCode"], AirportCFrom: discountsflight[i]["AirportCFrom"], AirportCTo: discountsflight[i]["AirportCTo"], DateFrom: discountsflight[i]["DateFrom"], DateTo: discountsflight[i]["DateTo"], DiscountA: discountsflight[i]["DiscountA"] });
+                }
+                //swal("salee", "", "success");
+                dataWithD();
+
+            }, errFunc);
+            // Create a table after Get Discount
+            function dataWithD() {
+                dataofflight = data;
+                ajaxCall("GET", "../api/Tours", "", function (dataoftours) {
+                    toursData = dataoftours;
+                    dataWithTours();
+
+                }, getTourErrorCB);
+            }
+            function dataWithTours() {
+                var str = '<div style="width:100%;overflow:auto;">' + "<table style=" + 'font-size:' + "14px; class='table-light table-hover'><thead><tr><th scope='col'></th><th scope='col'>Origin</th><th scope='col'></th><th scope='col'>Destination</th><th scope='col'>Departure date</th><th scope='col'>Arrival date</th><th scope='col'>Stops</th><th scope='col'>Airline</th> <th style='text-align: center' scope='col'> Price</th></tr></thead><tbody>";
+
+                for (var i = 0; i < data.length; i++) {
+
+                    var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+
+                    convertTime(data[i]);
+
+                    d.setUTCSeconds(data[i].dTimeUTC);
+                    d.toUTCString();
+                    var a = new Date(0);
+                    a.setUTCSeconds(data[i].aTimeUTC);
+                    a.toUTCString();
+                    var stop = [];
+                    strstops = "";
+                    var price = data[i]['price'];
+                    var sale = false;
+
+
+
+
+                    for (var j = 0; j < data[i].route.length - 1; j++) {
+                        stop.push(data[i].route[j].cityTo);
+                        strstops += data[i].route[j].cityTo + ",";
+
+                    }
+                    var numstrstops = "(" + stop.length + "Connections)";
+
+                    for (var j = 0; j < dflight.length; j++) {
+                        strcolor = "";
+                        if (data[i]['route'][0]['airline'] == dflight[j].AirlineCode && from == dflight[j].AirportCFrom && to == dflight[j].AirportCTo) {
+
+                            if (Ddateformat == dflight[j].DateFrom && Adateformat == dflight[j].DateTo) {
+                                price = parseInt(data[i]['price'] * (1 - ((dflight[j].DiscountA) / 100)));
+                                sale = true;
+                            }
+
+
+                        }
+
+
+                    }
+
+                    // <section class='regular slider'>
+                    for (var j in toursData) {
+                        if (toursData[j]['Country'].includes(data[i].route[0].cityTo))
+                            strcolor = 'style="color:red;"';
+                    }
+
+
+                    str += "<tr scope='row' class='flight_row' data-id='" + i + "'><td>" + i + "</td><td>" + data[i]['countryFrom']['name'] + "</br>" + data[i]['cityFrom'] + "</td><td><img src=" + '../image/flight.jpg' + "></td><td>" + data[i]['countryTo']['name'] + "</br>" + data[i]['cityTo'] + "</td> <td>" + d + "</td>   <td>" + a + "</td>";
+                    str += "<td>" + strstops + '</br>' + numstrstops + " </td> <td>" + data[i]['route'][0]['airline'] + " </td>";
+                    if (sale)
+                        str += '<td> <s>' + data[i]['price'] + '$ </s> </br> </td>'
+                    str += " <td>" + price + "$ </td> <td> <button type='button' id='" + i + "'class='btnadd'>Order </button> </td> <td> <i " + strcolor + "id='" + i + "'class='fa fa-heart fa_custom'> </i></td></tr>";
+                    str += "<tr scope='row' class='tour_row_" + i + "' style='display: none;'><td colspan='12'>";
+                    str += '<div class="popular_places_area">';
+                    //str +='<div class="your-class">';
+                    dt1 = 0;
+                    dt2 = 0;
+                    dt1 = new Date(data[i].route[0].dTime * 1000);
+                    dt2 = new Date(data[i].route[0].aTime * 1000);
+                    dourattionfirstleg = diff_hours(dt1, dt2);
+                    for (var j in toursData) {
+                        if (((data[i].route[0].cityTo) == (toursData[j]['Country'])) && (parseInt(dourattionfirstleg) > parseInt(toursData[j]["Duration"]))) {
+                            flagex = 1;
+                            str += '<div class="col-lg-3 col-md-6">';
+                            str += '<div class="single_place">';
+                            str += '<div class="thumb">';
+                            str += '<img src="' + toursData[j]["Img_url"] + '" alt = "" > <a class="prise"><p>Include flight</p>€' + (parseInt(toursData[j]["Price"]) + (Math.floor(parseInt(price) * 0.843))).toString() + '</a>';
+                            str += '</div>';
+                            str += '<div class="place_info" ><h3 id="' + j + '" class="btnadd">' + toursData[j]["Name_tours"] + '</h3><p>"' + toursData[j]["Type_tours"] + '"</p>';
+                            str += '<div class="rating_days d-flex justify-content-between">';
+                            str += '<span class="d-justify-align-items"><i class="fa fa-star"></i> <i class="fa fa-star"></i><i class="fa fa-star"></i> <i class="fa fa-star"></i>  <i class="fa fa-star"></i><a >(' + toursData[j]["Score"] + ')</a> </span>';
+                            str += '<br><div id="hodaya"> <input type="checkbox" class="btntour" id="' + toursData[j]["Name_tours"] + j + i + "" + '"name="choose" value=' + j + '~' + dourattionfirstleg + '></div>';
+                            str += ' <div class="days"> <i class="fa fa-clock-o"></i><a>' + toursData[j]["Duration"] + ' Hours</a> ';
+                            str += '<buttun class="trigger_popup_fricc" id=' + toursData[j]["Id_tours"] + '>click me</button>';
+                            str += '</div>'
+                            str += '</div></div></div></div>';
+                         
+                        }
+                    }
+
+
+
+                    str += '</div></td></tr>';
+                    
+
+                }
+
+
+
+                str += "</tbody></table></div>";
+               
+                if ((data == null) || (data == 0)) {
+                    swal("No Flights have been found!", "", "error");
+                    document.getElementById("ph").innerHTML = "";
+                }
+                else {
+                    document.getElementById("ph").innerHTML = str;
+                    swal("we found " + data.length + " flights for you!", "", "success");
+                    $("#fa fa - heart fa_custom").prop("disabled", true);
+                }
+            }
+        }
+
+        $('tr').mouseenter(function () {
+            $("div.manage-link").css('display', 'block');
+        });
+        $('tr').mouseleave(function () {
+            $('div.manage-link').css('none', 'block');
+        });
+
+        $(document).on("click", ".btnadd", function () {
+
+            index = $(this).attr("id");
+            $("#ph").hide();
+            $("#strtBTN").hide();
+            $("#ftourlbl").val(tourschosen[0]);
+            $("#stourlbl").val(tourschosen[1]);
+            $("#ttourlbl").val(tourschosen[2]);
+            $("#editDiv").show();
+            clearFields();
+            $("#editDiv :input").prop("disabled", false); // new mode: enable all controls in the form
+
+        });
+
+  
+
+        tournum = 0;
+        var limit = 3;
+        corrent_idtour = ''
+        dourtot = 0;
+        totTourPrice = 0;
+        $(document).on('click', '.btntour', function () {
+            corrent_idtour = $(this).attr("id");
+            string = (document.getElementById(corrent_idtour).value);
+            var res = string.split("~");
+            idin = res[0];
+            max = res[1];
+            dourtot += parseInt(toursData[idin]['Duration']);
+            if (max < dourtot) {
+
+                dourtot -= parseInt(toursData[idin]['Duration']);
+
+                Notiflix.Confirm.Show('The connection is not long enght!', 'please select up to ' + max + 'hours, would you like to empty your all choices?', 'Yes', 'No', function () {
+                    $('input[name="choose"]').each(function () {
+                        this.checked = false;
+                    });
+                    $('input[name="choose"]').each(function () {
+                        this.disabled = false;
+                    });
+                    tournum = 0;
+                    tourschosen = ["no tour", "no tour", "no tour"]
+                    dourtot = 0;
+                    totTourPrice = 0;
+                    flagtouroffer = 0
+                },
+                    function () {
+                        Notiflix.Notify.Failure('Not added');
+                        document.getElementById(corrent_idtour).checked = false;
+
+
+                    });
+            }
+            else if (($(this).is(':checked')) && (tournum < limit)) {
+                Notiflix.Confirm.Show('Are you sure?', 'Do you want to add this tour?', 'Yes', 'No', function () {
+                    if (tournum <= 3) {
+                        document.getElementById(corrent_idtour).disabled = true;
+                        tourschosen[tournum] = toursData[idin]['Id_tours'];
+                        totTourPrice += toursData[idin]['Price'];
+                        tournum++;
+                        flagtouroffer = 1;
+
+
+                    }
+
+                },
+                    function () {
+                        Notiflix.Notify.Failure('Not added');
+                        document.getElementById(corrent_idtour).checked = false;
+
+                    });
+            }
+
+            else if (($(this).is(':checked')) && (tournum >= limit)) {
+                Notiflix.Confirm.Show('choosen too many tours', 'please select up to 3 tours, would you like to empty your all choices?', 'Yes', 'No', function () {
+                    $('input[name="choose"]').each(function () {
+                        this.checked = false;
+                    });
+                    $('input[name="choose"]').each(function () {
+                        this.disabled = false;
+                    });
+                    tournum = 0;
+                    tourschosen = ["no tour", "no tour", "no tour"];
+                    dourtot = 0;
+                    totTourPrice = 0;
+                    flagtouroffer = 0;
+
+                }
+                    , function () {
+                        Notiflix.Notify.Failure('Not added');
+                        document.getElementById(corrent_idtour).checked = false;
+
+                    });
+
+            }
+        });
+
+        function moreinfotour(idtour) {
+            console.log(idtour);
+            url = "https://www.triposo.com/api/20200803/poi.json?id=" + idtour + "&fields=all&account=HDQQ2BE4&token=xxtievcqem0vohtepl5nq20xpe3hodmh";
+            $.get(url).done(successinfo);
+            $.get(url).fail(errorinfo);
+
+            k = 0;
+
+            function successinfo(data) {
+                datainfo = data.results;
+                k++;
+
+                strinfo = '<h1 data-test="activity-header__title" class="src-shared_component-sections-ActivityHeader-title-1qzL">Tickets for ' + datainfo[0]["name"] + ' tour</h1>';
+                strinfo += '<p></p>';
+                strinfo += '<h1 data-test="activity-header__title" class="src-shared_component-sections-ActivityHeader-title-1qzL">Info</h1>';
+                strinfo += '<p id="inform">' + datainfo[0]["snippet"] + '</p>';
+                strinfo += '<p>Pone: ' + datainfo[0]["properties"]['0']["value"] + '</p>';
+                strinfo += '<div data-test="activity-info__operational_days" class="src-shared_component-sections-ActivityInfo-infoRaw-60ek"><div class="src-shared_component-sections-ActivityInfo-infoIcoBox-1BRd"><i class="fa fa-globe"></i> </div> <span class="src-shared_component-sections-ActivityInfo-infoTitle-3XcW"> City: </span>' + datainfo[0]["location_ids"]['0'] + '</div>';
+                strinfo += '<div data-test="activity-info__operational_days" class="src-shared_component-sections-ActivityInfo-infoRaw-60ek"><div class="src-shared_component-sections-ActivityInfo-infoIcoBox-1BRd"><i class="fa fa-calendar-check-o"></i></div> <span class="src-shared_component-sections-ActivityInfo-infoTitle-3XcW"> Availability: </span> Every day</div>';
+                strinfo += '<div data-test="activity-info__operational_days" class="src-shared_component-sections-ActivityInfo-infoRaw-60ek"><div class="src-shared_component-sections-ActivityInfo-infoIcoBox-1BRd"><i class="fa fa-map-marker"></i></div> <span class="src-shared_component-sections-ActivityInfo-infoTitle-3XcW"> Adress: </span>' + datainfo[0]["properties"]['1']["value"] + '</div>';
+                strinfo += ' <div id ="tourinfo" > <iframe id="iframeid" width="300" height="150" style="border:0" src="https://www.google.com/maps/embed?api=1&origin=Space+Needle+Seattle+WA"></iframe> </div>'
+                if (datainfo[0]["booking_info"] != null) {
+                    urlvisit = datainfo[0]["booking_info"]["vendor_object_url"];
+                    if (urlvisit != null)
+                        strinfo += '<a href=' + urlvisit + ' class="button">Hover me  to visit the site</a>';
+
+
+                }
+
+                strinfo += '<a href="' + datainfo[0]["attribution"]['0']["url"] + '"target="_blank" rel="noopener noreferrer" class="row-start-center src-shared_component-sections-ActivityMap-anchor-u9Sc"><button class="src-shared_component-atoms-msm_button-3mM6 src-shared_component-atoms-theme_brand-2vOx src-shared_component-atoms-btn_cta-8Qp0 src-shared_component-atoms-extendedMobile-3Rr2 src-shared_component-sections-ActivityMap-eventMapBtn-3pNO"><span class="font-medium_20">Get directions</span></button></a>';
+                strinfo += '<P></P>';
+              
+
+                document.getElementById("tourinfo").innerHTML = strinfo;
+                x = datainfo[0]['coordinates']["latitude"]
+                y=datainfo[0]['coordinates']["longitude"]
+                myMap(x,y,k)
+            }
+
+        }
+
+
+
+
+        function errorinfo() {
+            function errorCB(err) {//do it
+                swal("erorr in informtion" + err.responseJSON.ExceptionMessage);
+            }
+        }
+
+        function clearFields() {//clear form save
+            $("#Passengers").val("");
+            $("#email").val("");
+            $("#term").prop('checked', true);
+
+        }
+        $(document).on("click", "#cancelSaveBTN", function () {
+            $("#editDiv").hide();
+            $("#strtBTN").show();
+            $("#ph").show();
+            $("#Passengers").val("");
+            $("#email").val("");
+            $("#term").prop('checked', true);
+            $('input[name="choose"]').each(function () {
+                this.checked = false;
+            });
+            $('input[name="choose"]').each(function () {
+                this.disabled = false;
+            });
+
+        });
+
+
+
+        function errorFF(err) {
+            console.log(err.responseJSON.ExceptionMessage);
+        }
+        function postSuccessCB() {
+            console.log("Post successful");
+
+
+        }
+
+        function errMyFlights(err) {//do it
+            console.log(1);
+        }
+        function errorCB(err) {//do it
+            swal("erorr" + err.responseJSON.ExceptionMessage);
+        }
+
+        function postErrorCB(err) {
+            swal(err.responseJSON.ExceptionMessage);
+        }
+
+        function getTourErrorCB(err) {
+            swal(err.responseJSON.ExceptionMessage);
+        }
+
+        function posterr(err) {
+            swal("erorrrrr");
+        }
+
+        //After submit POST Order,Flight,Legs.
+        function getFlight(event) {
+            event.preventDefault();
+            f = {};
+            f = dataofflight[index];
+            t1 = {};
+            t2 = {};
+            t3 = {};
+            t1 = []
+            sale = false;
+            convertTime(f);
+            var price = 0;
+            var datesubmit = new Date().toLocaleString();
+
+            for (var j = 0; j < dflight.length; j++) {
+
+                if (f['route'][0]['airline'] == dflight[j].AirlineCode && from == dflight[j].AirportCFrom && to == dflight[j].AirportCTo) {
+
+                    if (Ddateformat == dflight[j].DateFrom && Adateformat == dflight[j].DateTo) {
+                        price = parseInt(f['price'] * (1 - ((dflight[j].DiscountA) / 100)));
+                        sale = true;
+                    }
+
+                }
+
+            }
+
+
+            var d = new Date(0); // The 0 there is the key, which sets the date to the epoch
+            d.setUTCSeconds(f.dTimeUTC);
+            d.toUTCString();
+            var a = new Date(0);
+            a.setUTCSeconds(f.aTimeUTC);
+            a.toUTCString();
+            var stop = [];
+
+            strstops = "";
+
+            for (var j = 0; j < f.route.length - 1; j++) {
+                stop.push(f.route[j].cityTo);
+                strstops += f.route[j].cityTo + ",";
+            }
+
+            if ((flagtouroffer == 1) && (sale == false)) {
+                price = (Math.floor(parseInt(f['price']) * 0.843)) + totTourPrice
+            }
+            else if ((flagtouroffer == 1) && (sale == true)) {
+                price = (Math.floor(parseInt(price) * 0.843) + totTourPrice)
+            }
+            else if ((flagtouroffer == 0) && (sale == true)) {
+                price = (Math.floor(parseInt(price) * 0.843) + totTourPrice)
+            }
+
+
+            flight = {
+                id: f['id'], form: f['flyFrom'], to: f['flyTo'], time_Departure: d, time_Arrival: a, duration_flight: f['fly_duration'], cost: price, num_stops: stop.length
+            }
+
+
+            ajaxCall("POST", "../api/Flights", JSON.stringify(flight), function () {
+                flightId = f['id'];
+                passengersNames = $("#Passengers").val();
+                useremail = $("#email").val();
+                first = $("#ftourlbl").val();
+                second = $("#stourlbl").val();
+                third = $("#ttourlbl").val();
+
+
+                for (var i = 0; i < stop.length; i++) {
+                    var al = new Date(0);
+                    al.setUTCSeconds(f['route'][i]['aTimeUTC']);
+                    var dl = new Date(0);
+                    dl.setUTCSeconds(f['route'][i]['dTimeUTC']);
+                    var timeDiff = al.getTime() - dl.getTime();
+                    var dur = ((timeDiff / 3600000) + " hour/s " + (timeDiff % 3600000) / 60000 + " minutes");
+                    dl.toUTCString();
+                    al.toUTCString();
+                    leg = {
+                        id: f['route'][i]['id'], path_id: f['id'], legnumber: (i + 1), flight_no: f['route'][i]['flight_no'], fromairport: f['route'][i]['flyFrom'], toairport: f['route'][i]['flyTo'], airlinecode: f['route'][i]['airline'], depTime: dl, arriveTime: al, duration: dur
+
+                    }
+                    ajaxCall("POST", "../api/Leg", JSON.stringify(leg), function () {
+                        //swal("Flight Has Been Added!", "", "success");
+
+                    }, posterr);
+
+
+                }
+                ajaxCall("POST", "../api/MyOrder", JSON.stringify([flightId, passengersNames, useremail, datesubmit, first, second, third]), function () {
+                    swal(passengersNames + "  Your order has been successfully saved! ", "", "success");
+                    $('input[name="choose"]').each(function () {
+                        this.checked = false;
+                    });
+                    $('input[name="choose"]').each(function () {
+                        this.disabled = false;
+                    });
+                    tournum = 0;
+                    tourschosen = ["no tour", "no tour", "no tour"]
+                    dourtot = 0;
+                    flagtouroffer = 0
+                    totTourPrice = 0;
+
+                }, posterr);
+            }, posterr);//finish ajaxcall post flight
+
+
+
+            $("#ph").show();
+            $("#strtBTN").show();
+            $("#editDiv").hide();
+            $("#editDiv :input").prop("disabled", true);
+
+            return false;
+
+        }//finish getflight
+                //----------------------finish load this flight-------------------------------------------------------
+
+    </script>
+
+</head>
+
+
+
+<body>
+    <div class="flight-engine">
+        <div class="containerfl">
+
+
+            <div id="editDiv">
+                <form id="flightForm">
+                    <div class="form-group row">
+                        <div class="form-group col-sm-2">
+                            <label for="Passengers"><span class="red-star">★ </span>Passengers Name</label>
+                            <input type="text" class="form-control" id="Passengers" placeholder="Enter the Passengers name" required>
+                        </div>
+
+
+                        <div class="form-group col-sm-2">
+                            <label for="Email"><span class="red-star">★ </span>Email</label>
+                            <input type="text" class="form-control" id="email" placeholder="Enter Email" required>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <label for="chosentour"><span class="red-star">★ </span>chosentour</label>
+                            <input type="text" class="form-control" id="ftourlbl" placeholder="yourtour" required>
+                            <input type="text" class="form-control" id="stourlbl" placeholder="yourtour" required>
+                            <input type="text" class="form-control" id="ttourlbl" placeholder="yourtour" required>
+                        </div>
+
+
+                        <div class="form-group col-sm-2">
+                            <label for="term"><span class="red-star">★ </span>Accept our term and conditions?.</label>
+                            <input type="checkbox" class="form-control" id="term" checked />
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="form-group row">
+                        <div class="form-group col-sm-8">
+                            <label for="description">Terms And Counditions</label>
+                            <textarea rows="6" class="form-control" id="description" placeholder="Enter the description">
+Regarding the flights offered on the Portal, We exclusively act within our capacity as an intermediary. The agreement for the performance of the flight comes into effect directly between You and the relevant airline and We do not accept any contractual responsibility related to the performance or non-performance of your flight. The operating airline is solely responsible for performance / non-performance of your flight.
+Before You conclude the booking, the terms and conditions of the relevant airline(s) will be made available to You.
+When mediating Travel Services rendered by airlines, We are not guaranteedaccess to the 
+’s booking system. Where this is the case, We may acton your behalf in concluding the contract between You and the airline. Wemay also ask You to contact the relevant airline directly for questions onbookings, changes or cancellation of your booking. If You have purchasedour Flexible Ticket service (see Section 8), all rebooking requests musthowever be made through our customer service as set out in Section8.1.4.You may receive two booking confirmations – one from us and one fromthe relevant airline. If You have received two booking confirmations,please use the booking confirmation of the airline for check-in.
+Below, by way of a general overview, We provide information on conditions related to booking and transport typically applied by airlines in such or at least a similar way. However, any deviating provisions of the relevant airline prevail over the general information provided in this Section 3.2.4. Therefore, in each case, please check the applicable terms and conditions of the relevant airline prior to your booking.
+Flight times/check in
+All flight times specified are local. Next-day arrivals are indicated with a "+1" on the timetable. The stated flight times are preliminary and subject to change on short notice after the ticket has been issued; for example, due to restrictions by flight control, the weather, or functional restrictions by the airline. Please keep yourself informed of the current times well ahead of your flight.
+
+Please comply with the check-in times stated by the airline. The airlines are entitled to refuse boarding if You are late for check-in. Kindly observe that some airlines encourage check-in through their own website as they may charge a check-in fee when checking in manually at the airport.
+Combination of individual tickets
+A combination of two separate one-way tickets instead of a roundtrip ticket is clearly marked as such during the booking procedure. The tickets are treated independently from one another in the event of cancellation, change, disruption of air traffic such as strikes and changes to flight schedules. Each airline's own regulations will apply.
+
+Flight tickets with different booking numbers are always regarded as journeys that are independent of each other.
+Flight tickets with several segments/order of use
+Your roundtrip ticket or one-way ticket may consist of several segments. According to the conditions of most airlines, such flight segments are to be used in sequence. If not, many airlines will refuse transport on subsequent flight segments (e.g. failure to use one segment of a journey could invalidate the rest of the ticket). For roundtrip tickets a no-show on Your outbound flight may result in Your inbound flight being cancelled by the airline
+Pregnancy
+Some airlines refuse to transport women who are past week 28th of pregnancy at the time of the outward or return flight. If you are pregnant You must clarify with the airline and your doctor whether or not You can commence the journey.
+Infants and child tickets
+Please contact the airline to obtain the conditions for traveling with a child who does not have a separate seat. Usually, children above the age of 2 years require a separate seat, while children between the ages of 0 and 2 years travel as infants and will not be allocated a seat of their own. If the infant reaches the age of 2 before the end of the trip, a child ticket must be booked for the entire trip. Infant tickets cannot be booked before birth, as the correct name and date of birth must match those stated in the passport. We will not reimburse any expenses that arise if the wrong type of ticket is booked from the outset.
+Unaccompanied minors
+We do not mediate the booking of any tickets for unaccompanied minors. Children under 18 years must be booked for a journey in the company of an adult. Some countries and airlines refuse entry to children under 18 years unless accompanied by a legal guardian. Please note that some airlines require children under the age of 18 to bring a birth certificate to travel.
+Lost/damaged luggage
+Within our capacity as an intermediary, We accept no liability for lost or damaged luggage. Any problems should be reported immediately to the representative of the airline at the airport.
+Transit and overnight accommodation
+Generally, ground transportation and/or overnight accommodation during your trip is not included in the flight ticket price. You are personally responsible for checking ground transportation timetables and prices.
+Connection times between flights
+Standard tickets booked on the Portal have approved connection times. The times required for making connections between flights are calculated by the airlines. If a flight segment is delayed and leads to a missed connection, the airlines are obliged to assist You in reaching your final destination (see Section 11.1).
+When separate tickets are booked, the airlines bear no responsibility for missed connections resulting from delays. Therefore, it is your responsibility to ensure that the connection time is sufficient according to the airlines and airports. Any additional costs incurred on account of missed connections will not be reimbursed.
+Double booking
+A double booking means that two or more bookings with the same passenger name have been made with the same airline. If You have a double booking, the airline may cancel the trip(s). This may also occur if the bookings have been made with different travel agencies. We are not responsible for cancellations made by the airlines, nor for denied refunds from airlines, in cases where they suspect a double booking.
+</textarea>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" id="saveBTN">Save</button>
+                    <input type="button" class="btn btn-warning btn-lg" id="cancelSaveBTN" value="Cancel" />
+                    <img src="../image/7.png" />
+                </form>
+            </div>
+
+
+            <div class="tabing">
+                <form autocomplete="off" id="strtBTN">
+                    <ul>
+                        <li>
+                            <a class="active" href="login.html"><i class="fa fa-plane" aria-hidden="true"></i> Home</a>
+
+
+                            <a style="color:white" class="active"><i class="fa fa-heart" aria-hidden="true"></i> -red click for extra</a>
+
+                        </li>
+
+                    </ul>
+                    <div class="tab-content">
+                        <div class="row">
+                            <div id="1" class="tab1 active">
+                                <div class="column">
+                                    <div class="flight-tab ">
+                                        <div class="persent-one">
+                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                            <input type="text" name="dep" class="textboxstyle" id="dep" placeholder="From Airport">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="flight-tab ">
+                                        <div class="persent-one">
+                                            <i class="fa fa-map-marker" aria-hidden="true"></i>
+                                            <input type="text" name="dep" class="textboxstyle" id="arival" placeholder="To Airport">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="flight-tab ">
+                                        <div class="persent-one less-per">
+                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            <input type="date" name="dep" class="textboxstyle" id="from-date1" placeholder="Depart">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="flight-tab">
+                                        <div class="persent-one less-per">
+                                            <i class="fa fa-calendar" aria-hidden="true"></i>
+                                            <input type="date" name="dep" class="textboxstyle" id="to-date" placeholder="Returrn">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="column">
+                                    <div class="flight-tab ">
+                                        <div class="persent-one less-btn">
+                                            <input type="submit" style="font-size:18px" value="Search" class="btn btn-info cst-btn" id="srch">
+                                        </div>
+                                        <div class="persent-one less-btn">
+                                            <input type="button" name="submit" style="font-size:18px" value="GetAirports" class="btn btn-info cst-btn" id="srch1">
+                                        </div>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- flight tab -->
+                        </div>
+
+                    </div>
+                    <!-- tab 1 -->
+
+
+
+                </form>
+
+
+
+
+
+
+            </div>
+
+            <!-- tab content -->
+
+            <div id="ph">
+
+            </div>
+            <div class="hover_bkgr_fricc">
+                    <span class="helper"></span>
+                    <div>
+                        <div class="popupCloseButton">&times;</div>
+                        <div id="tourinfo">
+
+                        </div>
+
+                    </div>
+            </div>
+
+    </div>
+
+
+   
+    </div>
+
+</body>
+
+
+</html>
+

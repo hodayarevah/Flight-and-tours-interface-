@@ -1,0 +1,423 @@
+﻿.flight-engine {
+    position: relative;
+    margin-top: 104px;
+    left: 0px;
+    right: 0px;
+    bottom: 50px;
+    padding: 20px;
+    z-index: 999;
+    max-height: 100%;
+}
+
+s{
+    color:red;
+
+}
+
+
+
+
+#ph {
+    padding-top: 17%;
+}
+
+
+body {
+    /*background-image: url("https://media.travelist.co.il/new_homepage_cities/700/new-york.jpg");*/
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url('../image/newyork.jpg');
+    font-size: medium;
+    background-attachment: fixed;
+
+}
+
+/* Style tab links */
+.tablink {
+    background-color: #555;
+    color: white;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    font-size: 17px;
+    width: 25%;
+}
+
+    .tablink:hover {
+        background-color: #777;
+    }
+
+body .tabing {
+    left: 0px;
+    position: relative;
+    top: -15px;
+    float: left;
+    width: 100%;
+    background: rgba(197, 213, 220, 0.37);
+    padding: 2px 1px 18px 0px;
+    color: #080808;
+}
+
+    .tab1.active {
+        display: block
+    }
+
+.tab1 {
+    display: none
+}
+
+.tabing {
+    position: absolute;
+    left: 0px;
+    top: -500px;
+    float: left;
+    width: 100%;
+    background: rgba(197, 213, 220, 0.37);
+    padding: 0 10px 10px 10px;
+    color: #080808;
+}
+th {
+    font-size: 16px;
+    text-align: center;
+    padding: 10px;
+    background-color: rgba(197, 213, 220, 0.37);
+}
+td {
+    padding: 7px;
+    font-size: 14px;
+}
+}
+tr {
+    padding: 10px;
+}
+    .tabing ul {
+        margin: 0px;
+        padding: 0px;
+        list-style: none;
+        width: 100%;
+        float: left;
+    }
+
+        .tabing ul li {
+            float: left;
+        }
+
+            .tabing ul li a {
+                display: block;
+                padding: 5px;
+                text-decoration: none;
+                color: #fff;
+                background: rgba(0, 130, 185, .9);
+                margin: 0 10px 0 0;
+                padding: 5px 10px 5px 10px;
+                border-radius: 0px 0px 5px 5px;
+                font-size: 16px;
+                text-align: left;
+            }
+
+                .tabing ul li a.active {
+                    background: #ba0400 ;
+                    display:inline-block;
+                    margin-right: 5px;
+                }
+
+.flight-tab {
+
+
+    padding: 15px
+}
+
+    .flight-tab .textboxstyle {
+      
+        float: left;
+        color: #191919;
+        padding: 8px 10px 8px 35px;
+        border: none;
+        border-radius: 3px;
+        background: #f5f5f5;
+        font-size: 14px;
+        line-height: 20px;
+    }
+#dep {
+    float: left;
+    color: #191919;
+    padding: 8px 10px 8px 35px;
+    border: none;
+    border-radius: 3px;
+    background: #f5f5f5;
+    font-size: 14px;
+    line-height: 20px;
+    width: 100%;
+}
+#arival {
+    float: left;
+    color: #191919;
+    padding: 8px 10px 8px 35px;
+    border: none;
+    border-radius: 3px;
+    background: #f5f5f5;
+    font-size: 14px;
+    line-height: 20px;
+    width: 100%;
+}
+
+#from-date1 {
+    float: left;
+    color: #191919;
+    padding: 7px 8px 6px 23px;
+    border: none;
+    border-radius: 3px;
+    background: #f5f5f5;
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 5px;
+}
+#to-date {
+    float: left;
+    color: #191919;
+    padding: 7px 8px 6px 23x;
+    border: none;
+    border-radius: 3px;
+    background: #f5f5f5;
+    font-size: 14px;
+    line-height: 20px;
+    margin-top: 5px;
+}
+.persent-one {
+    float: left;
+    margin-right: 1%;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+    .persent-one i {
+        position: absolute;
+        left: 6px;
+        top: 14px;
+        color: #191919;
+        font-size: 18px;
+    }
+
+    .persent-one.less-per {
+        width: 16%;
+        float: left;
+        margin-right: 1%;
+    }
+
+    .persent-one.less-btn {
+        width: 5%;
+        float: left;
+        margin-right: 1%;
+    }
+
+        .persent-one.less-btn .cst-btn {
+            width: 92px;
+            margin-left: 98px;
+            height: 85px;
+            border-radius: 100%;
+            position: absolute;
+            top: -32px;
+            left: -31px;
+            background: linear-gradient(135deg, #da1cdc 0%, #ff390d 100%);
+        }
+img {
+    width: 120px;
+    height: 47px;
+
+   
+}
+.containerfl {
+    margin-left: 0;
+    font-family: 'Roboto', Helvetica, Arial,sans-serif;
+    font-size:10px;
+}
+    #srch1 {
+    left: 59px;
+    padding-left: 2px;
+}
+#srch2 {
+    left: 91px;
+    padding-left: 2px;
+    margin-left: 57px;
+}
+
+.table-light {
+    background-color: rgba(197, 213, 220, 0.77);
+    border-collapse: collapse;
+    color: black;
+    width: 100%;
+    max-height: 100%;
+}
+.price {
+    text-align: center;
+    font-weight: bold;
+    padding-left:10px;
+}
+.autocomplete {
+    /*the container must be positioned relative:*/
+    position: relative;
+    display: inline-block;
+}
+
+input {
+    border: 1px solid transparent;
+    background-color: #f1f1f1;
+    padding: 10px;
+    font-size: 16px;
+}
+
+    input  [type=text] {
+        background-color: #f1f1f1;
+     
+    }
+
+    input [type=submit] {
+        background-color: DodgerBlue;
+        color: #fff;
+    }
+
+    input [type=date] {
+        background-color: #f1f1f1;
+    }
+
+
+.autocomplete-items {
+    position: absolute;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-top: none;
+    z-index: 99;
+    /*position the autocomplete items to be the same width as the container:*/
+    top: 100%;
+    left: 0;
+    right: 0;
+}
+
+    .autocomplete-items div {
+        padding: 10px;
+        cursor: pointer;
+        background-color: #856a6adb;
+        border-bottom: 1px solid #d4d4d4;
+    }
+
+        .autocomplete-items div:hover {
+            /*when hovering an item:*/
+            background-color: #e9e9e9;
+        }
+
+.autocomplete-active {
+    /*when navigating through the items using the arrow keys:*/
+    background-color: DodgerBlue !important;
+    color: #ffffff;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+/* Create four equal columns that floats next to each other */
+.column {
+    float: left;
+    width: 20%;
+    padding-top: 6px;
+    padding-left: 10px;
+}
+}
+
+/* Clear floats after the columns */
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+/* On screens that are 992px wide or less, go from four columns to two columns */
+@media screen and (max-width: 992px) {
+    .column {
+        width: 50%;
+    }
+}
+
+/* On screens that are 600px wide or less, make the columns stack on top of each other instead of next to each other */
+@media screen and (max-width: 600px) {
+    .column {
+        width: 100%;
+    }
+}
+td button {
+    color: white;
+    background: linear-gradient(135deg, #da1cdc 0%, #ff390d 100%);
+}
+
+#btnadd {
+    position: relative;
+    margin-bottom: 8px;
+    padding: 6px 20px !important;
+    width: auto;
+    box-sizing: border-box;
+    border-radius: 20px;
+    border: 0px solid transparent;
+    background: #ff390d;
+    background: -moz-linear-gradient(-45deg, #da1cdc 0%, #ff390d 100%);
+    background: -webkit-linear-gradient(-45deg, #da1cdc 0%, #ff390d 100%);
+    background: linear-gradient(135deg, #da1cdc 0%, #ff390d 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$colorstop-dark', endColorstr='$colorstop-light',GradientType=1 );
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    font-family: 'Roboto', Helvetica, Arial,sans-serif;
+}
+
+.fa_custom {
+    font-size: 50px;
+    cursor: pointer;
+    user-select: none;
+    content: '&#9829';
+    padding:10px;
+}
+
+    .fa_custom:hover {
+        color: red;
+    }
+.collapsible {
+    background-color: #777;
+    color: white;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+}
+
+    .active, .collapsible:hover {
+  
+    }
+
+.content {
+    padding: 0 18px;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+
+.tourbtn{
+    position:fixed;
+}
+$('.tabing ul li a').click(function(e) {
+         e.stopPropagation();
+         e.preventDefault();
+         var tabcont = $(this).attr('href');
+         console.log(tabcont);
+         $('.tabing a').removeClass('active');
+         $(this).addClass('active');
+         $('.tab1').hide();
+         $(tabcont).show();
+     });
+
+
